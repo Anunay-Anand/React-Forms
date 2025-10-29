@@ -1,4 +1,6 @@
-export function useInput(defaultValue) {
+import { useState } from "react";
+
+export function useInput(defaultValue, validationFunc) {
     let [enteredValue, setEnteredValue] = useState(defaultValue);
     let [ isTouched, setIsTouched ] = useState(false);
 
@@ -15,6 +17,7 @@ export function useInput(defaultValue) {
         value: enteredValue,
         isTouched,
         handleInputChange,
-        handleInputBlur
+        handleInputBlur,
+        hasError: isTouched && !validationFunc(enteredValue)
     }
 };
