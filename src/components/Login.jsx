@@ -1,4 +1,6 @@
 import { useState } from "react";
+import Input from '../components/Input';
+import { isEmail, hasMinLength, isNotEmpty } from '../util/validation';
 
 export default function Login() {
 
@@ -7,9 +9,19 @@ export default function Login() {
   password: "",
 });
 
+const [touchedInputs, setTouchedInputs] = useState({
+  email: false,
+  password: false
+})
+
 function handleSubmit(event) {
   event.preventDefault();
   console.log(enteredValues);
+
+  setEnteredValues({
+    email: "",
+    password: "",
+  });
 }
 
 function handleOnChange(event, field) {
@@ -19,32 +31,43 @@ function handleOnChange(event, field) {
   }));
 }
 
+function handleInputBlur(field) {
+  setTouchedInputs((prev) => ({
+    ...prev,
+    [field]: true,
+  }));
+}
+
+const emailIsInvalid = isNotEmpty(touchedInputs.email) && !isEmail(enteredValues.email);
+const passwordIsInvalid =  isNotEmpty(touchedInputs.password) && !hasMinLength(enteredValues.password, 6);
+const formIsInvalid = emailIsInvalid && passwordIsInvalid;
+
   return (
     <form onSubmit={handleSubmit} className="form">
       <h2>Login</h2>
 
       <div className="control-row">
-        <div className="control no-margin">
-          <label htmlFor="email">Email</label>
-          <input
+          <Input
+            label="Email"
             id="email"
             type="email"
             value={enteredValues.email}
             name="email"
             onChange={(event) => handleOnChange(event, "email")}
+            onBlur={() => handleInputBlur('email')}
+            error={ emailIsInvalid && "Please enter a valid email address" }
           />
-        </div>
 
-        <div className="control no-margin">
-          <label htmlFor="password">Password</label>
-          <input
+          <Input
+            label="Password"
             id="password"
             type="password"
             value={enteredValues.password}
             name="password"
             onChange={(event) => handleOnChange(event, "password")}
+            onBlur={() => handleInputBlur('password')}
+            error={ passwordIsInvalid && "Please enter a valid Password" }
           />
-        </div>
       </div>
 
       <p className="form-actions">
